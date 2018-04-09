@@ -14,7 +14,8 @@ from kivy.uix.listview import ListItemButton
 from kivy.uix.button import Button
 from kivy.storage.jsonstore import JsonStore
 from kivy.properties import ObjectProperty,StringProperty, ListProperty, NumericProperty
-
+#imports the ProcessesIndicatorPopup class from ProcessNotifications module 
+from WeatherApp.ProcessNotifications import ProcessesIndicatorPopup 
 #improt search function from IniciateRequest module 
 from WeatherApp.IniciateRequest import search
 
@@ -55,7 +56,7 @@ class WeatherRoot(BoxLayout):
        
         if self.current_weather is None:
             #creates object of the CurrentWeatherForm and set the location property variable of the class object
-            self.current_weather = CurrentWeatherForm
+            self.current_weather = CurrentWeatherForm()
             
         if location is not None:
             self.current_weather.location = location
@@ -81,21 +82,23 @@ class AddLocationForm(BoxLayout):
     def search_location(self):
         '''this method retrieves the location entred by the user, insert it in the openweather api url and then pass it to request() class to fetch the information which is then pass to json()class for decoding'''
     
-        search_template = "http://api.openweathermap.org/data/2.5/"+"find?q={}&type=like"+"&APPID=46dc006c130ecf6e18c0d33dffbd39"
+        search_template = "http://api.openweathermap.org/data/2.5/"+"find?q={}&type=like"+"&APPID=46dc006c130ecf6e18c0d33dffbd39da"
         
         #implents the search function module and search  user input 
         search_location_data = search((self.search_input.text,), search_template)
         data = search_location_data
         if data:
-            cities = ["{} ({})".format(d["name"], d["sys"]["country"]) for d in data['list']]
+            cities = [(d["name"], d["sys"]["country"]) for d in data['list']]
+            print (cities)
             self.search_results.adapter.data[:]
             self.search_results.adapter.data.extend(cities)
             self.search_results._reset_spopulate()
-            
+        
+                    
     #set location property on the button with tuple of search location 
     def args_converter(self, index, data_item):
-        city, country = data_item
-        return {'location': (city, country)}
+        city,country = data_item
+        return {'location': (city,country)}
 
 #weather app mian app class         
 class WeatherApp(App):

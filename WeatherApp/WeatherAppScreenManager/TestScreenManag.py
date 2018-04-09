@@ -22,6 +22,7 @@ from kivy.storage.jsonstore import JsonStore
 #improt search function from IniciateRequest module 
 from WeatherApp.IniciateRequest import search
 
+
 # this is the location button for responding to user selection
 #implents the RecycleDataViewBehavior and Button  uses as the RecycleView class vieew class 
 class LocationButton(RecycleDataViewBehavior, Button):
@@ -45,23 +46,14 @@ class CurrentWeatherForm(Screen):
     
     #retrieve avd updates weather information for the selected location 
     def Retrieve_Update_Weather(self):
-        weather_template = "http://api.openweathermap.org/data/2.5/" + "weather?q={},{}&units=metrics" + "&APPID=46dc006c130ecf6e18c0d33dffbd39da"
+        search_template = "http://api.openweathermap.org/data/2.5/" + "weather?q={},{}&units=metrics" + "&APPID=46dc006c130ecf6e18c0d33dffbd39da"
         get_weather_data = search(self.location, search_template)
         data = get_weather_data
         if data:
             self.conditions = data['weather'][0]['description']
             self.temp = data['main']['temp']
             self.temp_min = data['main']['temp_min']
-            self.temp_max = data['main']['temp_max']
-
-class Error_Msg_Popup(Popup):
-
-    '''Popup modal window, this class implents the Popup() class. the Error_Msg method is used to dynamically set and display the various ecxeptions thrown when a user try to search for location'''
-    
-    def Error_Msg(self, title="", size=(), Err=""):
-        self.title = title
-        self.size = size
-        self.content = Label(text=Err)  
+            self.temp_max = data['main']['temp_max']  
         
 #Weatherapp root widget   
 #add location screen this is the main screen     
@@ -103,7 +95,8 @@ class AddLocationForm(Screen):
         search_location_data = search((self.ids.CityToSearch.text,), search_template)
         data = search_location_data
         if data: 
-            cities = [{'text':"{} ({})".format(d["name"], d["sys"]["country"])} for d in data['list']]
+            cities = [{"location":(d["name"], d["sys"]["country"])} for d in data['list']]
+            del self.search_results.data[:]
             self.search_results.data = cities
            
         
@@ -112,13 +105,12 @@ class AddLocationForm(Screen):
         del self.search_results.data[:]
         self.search_results.data = cities'''
 
-
-
-
-
 #weather app mian app class 
 class WeatherApp(App):
     pass
 
 if __name__ == '__main__':
     WeatherApp().run()
+    
+    
+ 
